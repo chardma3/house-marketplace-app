@@ -469,7 +469,6 @@ function EditListing() {
             max="6"
             accept=".jpg,.png,.jpeg"
             multiple
-            required
           />
           <button type="submit" className="primaryButton createListingButton">
             Edit Listing
