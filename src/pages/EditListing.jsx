@@ -110,7 +110,7 @@ function EditListing() {
       return;
     }
 
-    if (images.length > 6) {
+    if (images && images.length > 6) {
       setLoading(false);
       toast.error("Max 6 images");
       return;
