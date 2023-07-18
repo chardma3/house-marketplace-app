@@ -6,16 +6,17 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { doc, updateDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase.config";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 import Spinner from "../components/Spinner";
 
-function CreateListing() {
+function EditListing() {
   const [geolocationEnabled, setGeolocationEnabled] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [listing, setListing] = useState(false);
   const [formData, setFormData] = useState({
     type: "rent",
     name: "",
@@ -50,8 +51,37 @@ function CreateListing() {
 
   const auth = getAuth();
   const navigate = useNavigate();
+  const params = useParams();
   const isMounted = useRef(true);
 
+  // Redirect if listing is not user's
+  useEffect(() => {
+    if (listing && listing.userRef !== auth.currentUser.uid) {
+      toast.error("You can not edit that listing");
+      navigate("/");
+    }
+  });
+
+  // Fetch listing to edit
+  useEffect(() => {
+    setLoading(true);
+    const fetchListing = async () => {
+      const docRef = doc(db, "listings", params.listingId);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setListing(docSnap.data());
+        setFormData({ ...docSnap.data(), address: docSnap.data().location });
+        setLoading(false);
+      } else {
+        navigate("/");
+        toast.error("Listing does not exist");
+      }
+    };
+
+    fetchListing();
+  }, [params.listingId, navigate]);
+
+  // Sets userRef to logged in user
   useEffect(() => {
     if (isMounted) {
       onAuthStateChanged(auth, (user) => {
@@ -91,14 +121,10 @@ function CreateListing() {
 
     if (geolocationEnabled) {
       const response = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${
-          import.meta.env.VITE_APP_GEOCODE_API_KEY
-        }`
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${process.env.REACT_APP_GEOCODE_API_KEY}`
       );
 
       const data = await response.json();
-
-      /*       console.log(data); */
 
       geolocation.lat = data.results[0]?.geometry.location.lat ?? 0;
       geolocation.lng = data.results[0]?.geometry.location.lng ?? 0;
@@ -116,16 +142,13 @@ function CreateListing() {
     } else {
       geolocation.lat = latitude;
       geolocation.lng = longitude;
-      /* console.log(geolocation, location); */
     }
 
-    // store imgs in firebase
+    // Store image in firebase
     const storeImage = async (image) => {
       return new Promise((resolve, reject) => {
         const storage = getStorage();
-        const fileName = `${auth.currentUser.uid}-${
-          image.name
-        }-image${uuidv4()}`;
+        const fileName = `${auth.currentUser.uid}-${image.name}-${uuidv4()}`;
 
         const storageRef = ref(storage, "images/" + fileName);
 
@@ -134,8 +157,6 @@ function CreateListing() {
         uploadTask.on(
           "state_changed",
           (snapshot) => {
-            // Observe state change events such as progress, pause, and resume
-            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
             const progress =
               (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
             console.log("Upload is " + progress + "% done");
@@ -155,7 +176,6 @@ function CreateListing() {
             // Handle successful uploads on complete
             // For instance, get the download URL: https://firebasestorage.googleapis.com/...
             getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-              /*   console.log("File available at", downloadURL); */
               resolve(downloadURL);
             });
           }
@@ -171,8 +191,6 @@ function CreateListing() {
       return;
     });
 
-    /*  console.log(imgUrls); */
-
     const formDataCopy = {
       ...formData,
       imgUrls,
@@ -185,7 +203,9 @@ function CreateListing() {
     delete formDataCopy.address;
     !formDataCopy.offer && delete formDataCopy.discountedPrice;
 
-    const docRef = await addDoc(collection(db, "listings"), formDataCopy);
+    // Update listing
+    const docRef = doc(db, "listings", params.listingId);
+    await updateDoc(docRef, formDataCopy);
     setLoading(false);
     toast.success("Listing saved");
     navigate(`/category/${formDataCopy.type}/${docRef.id}`);
@@ -225,7 +245,7 @@ function CreateListing() {
   return (
     <div className="profile">
       <header>
-        <p className="pageHeader">Create a Listing</p>
+        <p className="pageHeader">Edit Listing</p>
       </header>
 
       <main>
@@ -452,7 +472,7 @@ function CreateListing() {
             required
           />
           <button type="submit" className="primaryButton createListingButton">
-            Create Listing
+            Edit Listing
           </button>
         </form>
       </main>
@@ -460,4 +480,4 @@ function CreateListing() {
   );
 }
 
-export default CreateListing;
+export default EditListing;
