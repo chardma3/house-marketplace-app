@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap");
 * {
   box-sizing: border-box;
 }
@@ -8,7 +8,7 @@ html::-webkit-scrollbar {
 }
 
 body {
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   background-color: #f2f4f8;
   margin: 0;
   box-sizing: border-box;
@@ -37,7 +37,7 @@ button {
   height: 3rem;
   width: 100%;
   outline: none;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   padding: 0 3rem;
   font-size: 1rem;
 }
@@ -186,12 +186,12 @@ button {
 
 .nameInput {
   margin-bottom: 2rem;
-  background: url('./assets/svg/badgeIcon.svg') #ffffff 2.5% center no-repeat;
+  background: url("./assets/svg/badgeIcon.svg") #ffffff 2.5% center no-repeat;
 }
 
 .emailInput {
   margin-bottom: 2rem;
-  background: url('./assets/svg/personIcon.svg') #ffffff 2.5% center no-repeat;
+  background: url("./assets/svg/personIcon.svg") #ffffff 2.5% center no-repeat;
 }
 
 .passwordInputDiv {
@@ -200,7 +200,7 @@ button {
 
 .passwordInput {
   margin-bottom: 2rem;
-  background: url('./assets/svg/lockIcon.svg') #ffffff 2.5% center no-repeat;
+  background: url("./assets/svg/lockIcon.svg") #ffffff 2.5% center no-repeat;
 }
 
 .showPassword {
@@ -425,6 +425,13 @@ button {
   }
 }
 
+.categoryListingImgEdit {
+  width: 100%;
+  height: 100px;
+  border-radius: 1.5rem;
+  object-fit: cover;
+}
+
 .categoryListingDetails {
   width: 65%;
 }
@@ -621,7 +628,7 @@ button {
 
 .logOut {
   cursor: pointer;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-size: 1rem;
   font-weight: 600;
   color: #ffffff;
@@ -753,7 +760,7 @@ button {
 .formInputFile {
   border: none;
   outline: none;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 .formInputSmall,
 .formInputFile {
@@ -818,4 +825,44 @@ button {
   margin-left: 1rem;
   font-size: 0.8rem;
   opacity: 0.75;
+}
+
+/* Add this style for the imageItem div */
+.imageItem {
+  position: relative;
+  display: inline-block; /* Use inline-block to avoid affecting the width */
+}
+
+/* Add this style for the new container */
+.imageContainer {
+  position: relative;
+  display: inline-block;
+  padding-top: 10px;
+  padding-right: 5px;
+}
+
+/* Add this style for the deleteIconContainer div */
+.deleteIconContainer {
+  padding-top: 18px;
+  padding-right: 10px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+  display: flex; /* Use flexbox to position the icon within the container */
+  justify-content: flex-end; /* Align the icon to the right */
+  width: 100%; /* Set the container width to ensure the icon takes the full width */
+}
+
+/* Add this style to adjust the delete icon size */
+.deleteIcon {
+  width: 20px;
+  height: 20px;
+  fill: #ff0000; /* Set the fill color to your preference */
+  transition: fill 0.1s ease-in-out; /* Optional: Add a transition effect for hover */
+}
+
+/* Optional: Add hover effect to the delete icon */
+.deleteIcon:hover {
+  fill: #f85555; /* Set the hover fill color to your preference */
 }

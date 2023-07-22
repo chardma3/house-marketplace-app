@@ -5,6 +5,7 @@ import {
   ref,
   uploadBytesResumable,
   getDownloadURL,
+  deleteObject,
 } from "firebase/storage";
 import { doc, updateDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase.config";
@@ -12,11 +13,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 import Spinner from "../components/Spinner";
+import { ReactComponent as DeleteIcon } from "../assets/svg/deleteIcon.svg";
 
 function EditListing() {
   const [geolocationEnabled, setGeolocationEnabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const [listing, setListing] = useState(false);
+  const [loadedImageUrls, setLoadedImageUrls] = useState([]); // Add state to store loaded image URLs
   const [formData, setFormData] = useState({
     type: "rent",
     name: "",
@@ -28,7 +31,7 @@ function EditListing() {
     offer: false,
     regularPrice: 0,
     discountedPrice: 0,
-    images: {},
+    images: [], // why does it matter if it's an object or an array
     latitude: 0,
     longitude: 0,
   });
@@ -68,14 +71,26 @@ function EditListing() {
     const fetchListing = async () => {
       const docRef = doc(db, "listings", params.listingId);
       const docSnap = await getDoc(docRef);
+
       if (docSnap.exists()) {
+        console.log("Fetched Listing Data:", docSnap.data()); // Add this line to log the fetched data
+
+        // Set the loaded image URLs in state
+        const imgUrls = docSnap.data().imgUrls || [];
+        setLoadedImageUrls(imgUrls);
+
         setListing(docSnap.data());
-        setFormData({ ...docSnap.data(), address: docSnap.data().location });
-        setLoading(false);
+        setFormData({
+          ...docSnap.data(),
+          address: docSnap.data().location,
+          images: imgUrls,
+        });
       } else {
         navigate("/");
         toast.error("Listing does not exist");
       }
+
+      setLoading(false);
     };
 
     fetchListing();
@@ -110,7 +125,7 @@ function EditListing() {
       return;
     }
 
-    if (images && images.length > 6) {
+    if (images.length > 6) {
       setLoading(false);
       toast.error("Max 6 images");
       return;
@@ -121,7 +136,9 @@ function EditListing() {
 
     if (geolocationEnabled) {
       const response = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${process.env.REACT_APP_GEOCODE_API_KEY}`
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${
+          import.meta.env.VITE_APP_GEOCODE_API_KEY
+        }`
       );
 
       const data = await response.json();
@@ -237,6 +254,8 @@ function EditListing() {
       }));
     }
   };
+
+  const handleRemoveImage = (index) => {};
 
   if (loading) {
     return <Spinner />;
@@ -456,11 +475,11 @@ function EditListing() {
               />
             </>
           )}
-
           <label className="formLabel">Images</label>
           <p className="imagesInfo">
             The first image will be the cover (max 6).
           </p>
+
           <input
             className="formInputFile"
             type="file"
@@ -470,6 +489,30 @@ function EditListing() {
             accept=".jpg,.png,.jpeg"
             multiple
           />
+          <div className="imageList">
+            {loadedImageUrls.map((url, index) => (
+              <div key={index} className="imageContainer">
+                {url ? (
+                  <img
+                    src={url}
+                    alt={`Listing ${index + 1}`}
+                    className="categoryListingImgEdit"
+                  />
+                ) : (
+                  <p>Error loading image</p>
+                )}
+                <div className="deleteIconContainer">
+                  <DeleteIcon
+                    className="deleteIcon"
+                    onClick={() => {
+                      console.log("Delete button clicked on image:", index);
+                      handleRemoveImage(index);
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
           <button type="submit" className="primaryButton createListingButton">
             Edit Listing
           </button>
