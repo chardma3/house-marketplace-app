@@ -347,6 +347,11 @@ button {
   background-color: rgba(0, 0, 0, 0.8);
   padding: 0.5rem;
 }
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: black;
+}
 @media (min-width: 1024px) {
   .swiperSlideText {
     font-size: 1.75rem;

@@ -28,6 +28,11 @@ function Contact() {
 
   const onChange = (e) => setMessage(e.target.value);
 
+  const handleButtonClick = () => {
+    console.log("Button clicked!");
+    console.log("Message content:", message);
+  };
+
   return (
     <div className="pageContainer">
       <header>
@@ -59,7 +64,11 @@ function Contact() {
                 "listingName"
               )}&body=${message}`}
             >
-              <button type="button" className="primaryButton">
+              <button
+                type="button"
+                className="primaryButton"
+                onClick={handleButtonClick}
+              >
                 Send Message
               </button>
             </a>
