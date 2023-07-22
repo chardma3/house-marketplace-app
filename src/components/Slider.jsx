@@ -6,7 +6,6 @@ import SwiperCore, { Navigation, Pagination, Scrollbar, A11y } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
 import Spinner from "./Spinner";
-SwiperCore.use([Navigation, Pagination, Scrollbar, A11y]);
 
 function Slider() {
   const [loading, setLoading] = useState(true);
@@ -49,28 +48,35 @@ function Slider() {
       <>
         <p className="exploreHeading">Recommended</p>
 
-        <Swiper slidesPerView={1} pagination={{ clickable: true }}>
-          {listings.map(({ data, id }) => (
-            <SwiperSlide
-              key={id}
-              onClick={() => navigate(`/category/${data.type}/${id}`)}
-            >
-              <div
-                style={{
-                  background: `url(${data.imgUrls[0]}) center no-repeat`,
-                  backgroundSize: "cover",
-                  height: "250px",
-                }}
-                className="swiperSlideDiv"
+        <Swiper
+          modules={[Navigation, Pagination, Scrollbar, A11y]}
+          slidesPerView={1}
+          pagination={{ clickable: true }}
+          /*  navigation */
+        >
+          {listings.map(({ data, id }) => {
+            return (
+              <SwiperSlide
+                key={id}
+                onClick={() => navigate(`/category/${data.type}/${id}`)}
               >
-                <p className="swiperSlideText">{data.name}</p>
-                <p className="swiperSlidePrice">
-                  ${data.discountedPrice ?? data.regularPrice}{" "}
-                  {data.type === "rent" && "/ month"}
-                </p>
-              </div>
-            </SwiperSlide>
-          ))}
+                <div
+                  style={{
+                    background: `url(${data.imgUrls[0]}) center no-repeat`,
+                    backgroundSize: "cover",
+                    padding: "150px",
+                  }}
+                  className="swipeSlideDiv"
+                >
+                  <p className="swiperSlideText">{data.name}</p>
+                  <p className="swiperSlidePrice">
+                    ${data.discountedPrice ?? data.regularPrice}{" "}
+                    {data.type === "rent" && "/month"}
+                  </p>
+                </div>
+              </SwiperSlide>
+            );
+          })}
         </Swiper>
       </>
     )
