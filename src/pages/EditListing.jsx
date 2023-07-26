@@ -56,6 +56,7 @@ function EditListing() {
   const navigate = useNavigate();
   const params = useParams();
   const isMounted = useRef(true);
+  const storage = getStorage();
 
   // Redirect if listing is not user's
   useEffect(() => {
@@ -164,7 +165,6 @@ function EditListing() {
     // Store image in firebase
     const storeImage = async (image) => {
       return new Promise((resolve, reject) => {
-        const storage = getStorage();
         const fileName = `${auth.currentUser.uid}-${image.name}-${uuidv4()}`;
 
         const storageRef = ref(storage, "images/" + fileName);
@@ -255,7 +255,27 @@ function EditListing() {
     }
   };
 
-  const handleRemoveImage = (index) => {};
+  const handleRemoveImage = (url) => {
+    console.log(url);
+    //Get the filename from the upload URL
+    let formattedUrl = url.split("/").pop().split("#")[0].split("?")[0];
+    // Replace "%2F" in the URL with "/"
+    const fileNameToDelete = formattedUrl.replace("%2F", "/");
+    const modifiedFileName = fileNameToDelete.substring(7);
+    console.log(modifiedFileName);
+
+    // Create a reference to the file to delete
+    const imgRef = ref(storage, `${modifiedFileName}`);
+
+    // Delete the file
+    deleteObject(imgRef)
+      .then(() => {
+        toast.success("Image deleted");
+      })
+      .catch((error) => {
+        toast.error("Failed to delete image");
+      });
+  };
 
   if (loading) {
     return <Spinner />;
@@ -505,8 +525,10 @@ function EditListing() {
                   <DeleteIcon
                     className="deleteIcon"
                     onClick={() => {
-                      console.log("Delete button clicked on image:", index);
-                      handleRemoveImage(index);
+                      console.log(
+                        `$Delete button ${index} clicked with url of: ${url}`
+                      );
+                      handleRemoveImage(url);
                     }}
                   />
                 </div>
