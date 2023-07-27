@@ -12,6 +12,7 @@ body {
   background-color: #f2f4f8;
   margin: 0;
   box-sizing: border-box;
+  min-height: 120vh;
 }
 
 a {
@@ -395,6 +396,10 @@ button {
 .exploreCategoryName {
   font-weight: 500;
   text-align: left;
+}
+
+.listingsList {
+  padding: 0;
 }
 
 .category {
@@ -859,15 +864,73 @@ button {
   width: 100%; /* Set the container width to ensure the icon takes the full width */
 }
 
-/* Add this style to adjust the delete icon size */
 .deleteIcon {
   width: 20px;
   height: 20px;
-  fill: #ff0000; /* Set the fill color to your preference */
-  transition: fill 0.1s ease-in-out; /* Optional: Add a transition effect for hover */
+  fill: #ff0000;
+  transition: fill 0.1s ease-in-out;
 }
 
-/* Optional: Add hover effect to the delete icon */
 .deleteIcon:hover {
-  fill: #f85555; /* Set the hover fill color to your preference */
+  fill: #f85555;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: grid;
+  place-items: center;
+  transition: var(--transition);
+  visibility: hidden;
+  z-index: -1;
+}
+
+/* OPEN/CLOSE MODAL */
+.show-modal {
+  visibility: visible;
+  z-index: 10;
+}
+
+.modal-container {
+  background: white;
+  border-radius: 20px;
+  width: 120vw;
+  height: 50vh;
+  max-width: 500px;
+  text-align: center;
+  position: relative;
+}
+
+.modal-container h3 {
+  margin: 30px;
+}
+
+.modal-container p {
+  margin: 30px;
+}
+
+.close-modal-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 30px;
+  background: transparent;
+  border-color: transparent;
+  color: red;
+  cursor: pointer;
+}
+.questionImg {
+  font-size: 30px;
+  margin-right: 8px;
+}
+
+.headerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }

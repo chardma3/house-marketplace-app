@@ -20,6 +20,7 @@ function EditListing() {
   const [loading, setLoading] = useState(false);
   const [listing, setListing] = useState(false);
   const [loadedImageUrls, setLoadedImageUrls] = useState([]); // Add state to store loaded image URLs
+  console.log(loadedImageUrls);
   const [formData, setFormData] = useState({
     type: "rent",
     name: "",
@@ -256,7 +257,17 @@ function EditListing() {
   };
 
   const handleRemoveImage = (url) => {
-    console.log(url);
+    if (window.confirm("Are you sure you want to delete this img?"))
+      console.log(url);
+
+    // Filter out the URL that matches the one to be deleted
+    const updatedImageUrls = loadedImageUrls.filter(
+      (imageUrl) => imageUrl !== url // creates a new array filled with elements that pass a test provided by a function.
+    );
+
+    // Update the state with the new array of image URLs
+    setLoadedImageUrls(updatedImageUrls);
+
     //Get the filename from the upload URL
     let formattedUrl = url.split("/").pop().split("#")[0].split("?")[0];
     // Replace "%2F" in the URL with "/"
@@ -265,7 +276,7 @@ function EditListing() {
     console.log(modifiedFileName);
 
     // Create a reference to the file to delete
-    const imgRef = ref(storage, `${modifiedFileName}`);
+    const imgRef = ref(storage, `${modifiedFileName}`); // why is this in curly braces?
 
     // Delete the file
     deleteObject(imgRef)
